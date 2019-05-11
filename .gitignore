@@ -53,4 +53,4 @@ Mkfile.old
 dkms.conf
 
 # Project-specific
-/Str/str
+/**/std

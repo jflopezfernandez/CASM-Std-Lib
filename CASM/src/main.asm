@@ -1,7 +1,7 @@
 
 ;==============================================================================
 ;
-;                                 STR
+;                            CASM Standard Lib
 ;
 ;==============================================================================
 ;
@@ -10,8 +10,8 @@
 ;
 ; Description:
 ;
-;   This is a library implementing various string-related functions in NASM
-;   assembly language for x86-64 computers running *nix systems.
+;   This is a library implementing the functionality of the C Standard Library
+;   in NASM assembly language for x86-64 computers running *nix systems.
 ;
 ;==============================================================================
 

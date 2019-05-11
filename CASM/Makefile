@@ -9,7 +9,7 @@ AS = nasm
 LD = ld
 CC = gcc-9.1.0
 
-TARGET = str
+TARGET = std
 
 all: $(TARGET)
 
