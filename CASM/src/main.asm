@@ -252,9 +252,35 @@ print_int:
     xor rax, rax
     ret
 
-; TODO: Implement read_char
+;==============================================================================
+;
+;                                 READ_CHAR
+;
+;==============================================================================
+;
+; Author: Igor Zhirkov
+;
+; Description:
+;
+;   ...
+;
+;==============================================================================
+
 read_char:
-    xor rax, rax
+    push 0
+    xor rax, rax    ; Load system call id 0 into RAX, indicating an I/O read.
+    xor rdi, rdi    ; Load file descriptor id 0 (stdin) into the RDI register.
+    mov rsi, rsp    ; The string buffer is the stack-allocated space we just created.
+    mov rdx, 1      ; String length to read set to 1, passed through the RDX register.
+
+    syscall
+
+    ; DEBUG: Test read_char function by immediately printing the input.
+    mov rdi, [rsp]
+    call putchar
+    call print_newline
+
+    pop rax
     ret
 
 ; TODO: Implement read_word
@@ -322,7 +348,8 @@ _start:
     
     ; call strlen
     ; call puts
-    call putchar
-    call print_newline
+    ; call putchar
+    ; call print_newline
+    call read_char
 
     call exit
