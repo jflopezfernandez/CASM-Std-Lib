@@ -276,9 +276,9 @@ read_char:
     syscall
 
     ; DEBUG: Test read_char function by immediately printing the input.
-    mov rdi, [rsp]
-    call putchar
-    call print_newline
+    ; mov rdi, [rsp]
+    ; call putchar
+    ; call print_newline
 
     pop rax
     ret
