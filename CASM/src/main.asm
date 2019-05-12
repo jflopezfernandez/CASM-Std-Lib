@@ -79,9 +79,19 @@ exit:
 ;   of a null-terminated string, and it returns the length by incrementing
 ;   the RAX register until hitting the first null character.
 ;
+; Note:
+;
+;   I modified the original function to use the RBP and RSP registers, 
+;   to demonstrate how to use the stack and base pointer registers. I 
+;   prefer to compile with the '-fomit-frame-pointer' option on gcc, but this
+;   is just for illustrative purposes.
+;
 ;==============================================================================
 
 strlen:
+    push rbp
+    mov rbp, rsp
+
     xor rax, rax
 
 .loop:
@@ -91,6 +101,7 @@ strlen:
     jmp .loop
 
 .end:
+    pop rbp
     ret
 
 ;==============================================================================
@@ -160,6 +171,25 @@ puts:
 ;   which prints the passed in argument of type 'char' and prints it to 
 ;   stdout.
 ;
+;   Like the puts function, putchar pushes the RDI register onto the stack
+;   to preserve the parameter's value, as the call to puts means that the
+;   contents of the RDI register are not guaranteed to be preserved. The
+;   function then sets the RDI register to the contents of the stack pointer,
+;   RSP, which allows the puts function to access the putchar function's
+;   parameter.
+;
+;   The reason for this seemingly roundabout method of passing the argument
+;   to the puts function is that the calling convention requires the stack
+;   to be preserved between function calls. This means that while the RDI
+;   register where the argument initially resided was volatile and could
+;   be modified by the called function, putting the argument on the stack
+;   guaranteed the argument would be unchanged but would still be accessible
+;   to the puts function.
+;
+;   Upon returning from the puts function, the putchar function must pop the
+;   previously-allocated contents off the stack to also comply with the
+;   stack-preservation convention.
+;
 ; C Language Equivalent:
 ;
 ;   void putchar(char c) {
@@ -169,6 +199,86 @@ puts:
 ;==============================================================================
 
 putchar:
+    push rdi
+    mov rdi, rsp
+    call puts
+    pop rdi
+    ret
+
+;==============================================================================
+;
+;                                 PRINT_NEWLINE
+;
+;==============================================================================
+;
+; Author: Igor Zhirkov
+; 
+; Description:
+; 
+;   This is a utility function that results in a newline character
+;   being printed to stdout. It is implemented by simply loading the newline
+;   ASCII value (10) into the RDI register and jumping directly to the
+;   putchar function. The putchar function then reads its first and only
+;   argument from the RDI register, as per the x86-64 *nix calling convention,
+;   after which the putchar function's ret instruction passes execution
+;   control directly to the main function.
+;
+;   The function could have been similarly implemented as follows:
+;
+;       print_newline:
+;           mov rdi, 10
+;           call putchar
+;           ret
+;
+;   The single jmp instruction foregoes the need to create a new stack frame,
+;   which must be set up then disassembled. Instead, the current implementation
+;   results in a more direct execution path, where the print_newline function
+;   is semantically nothing more than loading a newline into the RDI register,
+;   but adds no further overhead.
+;
+;==============================================================================
+
+print_newline:
+    mov rdi, 10
+    jmp putchar
+
+; TODO: Implement print_uint
+print_uint:
+    xor rax, rax
+    ret
+
+; TODO: Implement print_int
+print_int:
+    xor rax, rax
+    ret
+
+; TODO: Implement read_char
+read_char:
+    xor rax, rax
+    ret
+
+; TODO: Implement read_word
+read_word:
+    xor rax, rax
+    ret
+
+; TODO: Implement parse_uint
+parse_uint:
+    xor rax, rax
+    ret
+
+; TODO: Implement parse_int
+parse_int:
+    xor rax, rax
+    ret
+
+; TODO: Implement string_equals
+string_equals:
+    xor rax, rax
+    ret
+
+; TODO: Implement string_copy
+string_copy:
     xor rax, rax
     ret
 
@@ -208,9 +318,11 @@ putchar:
 ;==============================================================================
 
 _start:
-    mov rdi, str
+    mov rdi, 'a'
     
     ; call strlen
-    call puts
+    ; call puts
+    call putchar
+    call print_newline
 
     call exit
